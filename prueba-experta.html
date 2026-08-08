@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PULSO · prueba de la experta</title>
+<style>
+ body{margin:0;background:#14161A;color:#DED6C9;font:16px/1.5 system-ui,sans-serif;padding:20px}
+ h1{font-size:22px;color:#EDE7DE;letter-spacing:2px}
+ button{background:#E23A2E;color:#FFF5F2;border:0;border-radius:6px;padding:14px 20px;font-size:17px;font-weight:700;width:100%;margin:8px 0}
+ pre{background:#16181C;border:1px solid #363B44;border-radius:6px;padding:12px;white-space:pre-wrap;word-break:break-word;font-size:13px}
+ .ok{color:#7FC9A0}.mal{color:#E8776A}
+ input{width:100%;padding:12px;background:#16181C;border:1px solid #363B44;color:#EDE7DE;border-radius:6px;font-size:15px;margin-bottom:8px}
+</style></head>
+<body>
+<h1>Prueba de la experta</h1>
+<p>Pulsa el botón y espera unos segundos. Copia lo que salga y mándaselo a Claude.</p>
+<input id="url" value="https://pulso-experta.iagoba90210.workers.dev">
+<button onclick="probar()">Probar el Worker</button>
+<pre id="salida">Sin probar todavía.</pre>
+<script>
+async function probar(){
+  const s = document.getElementById('salida');
+  const u = document.getElementById('url').value.trim();
+  s.textContent = 'Llamando…';
+  const t0 = Date.now();
+  try {
+    const r = await fetch(u, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({max_tokens:200, temperature:1, messages:[{role:'user',
+        content:'Responde SOLO con JSON, sin marcas de código: {"w":"VELETA","d":"una definición breve"}'}]})
+    });
+    const texto = await r.text();
+    const ms = Date.now()-t0;
+    let veredicto;
+    if (r.ok && texto.includes('content')) veredicto = '✅ LA EXPERTA FUNCIONA';
+    else if (r.status===403) veredicto = '❌ 403: revisa ALLOWED_ORIGIN en Cloudflare';
+    else if (r.status===429) veredicto = '⚠️ 429: cuota de Gemini agotada por hoy';
+    else if (r.status===400) veredicto = '❌ 400: clave o petición incorrecta';
+    else if (r.status===405) veredicto = '❌ 405: el Worker no recibió el POST';
+    else veredicto = '❌ Error ' + r.status;
+    s.innerHTML = '<b class="'+(r.ok?'ok':'mal')+'">'+veredicto+'</b>\n\n'
+      + 'Estado HTTP: ' + r.status + '\nTardó: ' + ms + ' ms\n\nRespuesta:\n' + texto.slice(0,1200);
+  } catch(e) {
+    s.innerHTML = '<b class="mal">❌ No se pudo conectar</b>\n\n' + e.message
+      + '\n\nSi dice «Failed to fetch», suele ser CORS: revisa la variable ALLOWED_ORIGIN.';
+  }
+}
+</script>
+</body></html>
