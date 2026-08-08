@@ -1,0 +1,13 @@
+{
+  "name": "PULSO · palabras, números y duelos",
+  "short_name": "PULSO",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#14161A",
+  "theme_color": "#14161A",
+  "lang": "es",
+  "icons": [
+    { "src": "icono-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
