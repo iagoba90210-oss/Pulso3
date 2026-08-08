@@ -26,13 +26,16 @@ async function probar(){
     const r = await fetch(u, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({max_tokens:200, temperature:1, messages:[{role:'user',
-        content:'Responde SOLO con JSON, sin marcas de código: {"w":"VELETA","d":"una definición breve"}'}]})
+      body: JSON.stringify({max_tokens:1500, messages:[{role:'user',
+        content:'Eres quien redacta las definiciones de un concurso de palabras. Elige una palabra española común de 5 a 10 letras y defínela con elegancia. Responde SOLO con JSON, sin marcas de código: {"w":"PALABRA","d":"la definición"}'}]})
     });
     const texto = await r.text();
     const ms = Date.now()-t0;
     let veredicto;
-    if (r.ok && texto.includes('content')) veredicto = '✅ LA EXPERTA FUNCIONA';
+    let completa = false;
+    try { const j = JSON.parse(texto); completa = !!JSON.parse(j.content[0].text).d; } catch(e) {}
+    if (r.ok && completa) veredicto = '✅ LA EXPERTA FUNCIONA (respuesta completa)';
+    else if (r.ok) veredicto = '⚠️ Responde, pero la respuesta llega incompleta';
     else if (r.status===403) veredicto = '❌ 403: revisa ALLOWED_ORIGIN en Cloudflare';
     else if (r.status===429) veredicto = '⚠️ 429: cuota de Gemini agotada por hoy';
     else if (r.status===400) veredicto = '❌ 400: clave o petición incorrecta';
