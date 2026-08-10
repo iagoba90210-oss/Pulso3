@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.iagoba90210_oss.twa",
+        "sha256_cert_fingerprints": ["43:39:1A:B3:3C:FD:3B:5C:10:6A:C1:5A:6D:3F:D1:FC:62:93:0E:49:9B:62:D2:89:96:B3:69:72:3F:9F:9F:61"]
+      }
+    }]
