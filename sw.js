@@ -1,4 +1,4 @@
-const CACHE = "pulso-v42";
+const CACHE = "pulso-v50";
 const BASE = ["./", "index.html", "manifest.json", "icono-192.png", "icono-512.png"];
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(BASE)).then(() => self.skipWaiting()));
